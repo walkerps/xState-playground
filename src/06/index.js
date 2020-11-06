@@ -21,6 +21,10 @@ const assignPosition = assign({
   py: 0,
 });
 
+const draggedStateTargeted = assign({
+  drags : (context, _) => context.drags +1,
+})
+
 const assignDelta = assign({
   dx: (context, event) => {
     return event.clientX - context.px;
@@ -55,6 +59,7 @@ const machine = createMachine({
           // Don't select this transition unless
           // there are < 5 drags
           // ...
+          cond: (context, _ ) => context.drags < 5,
           actions: assignPoint,
           target: 'dragging',
         },
@@ -64,6 +69,7 @@ const machine = createMachine({
       // Whenever we enter this state, we want to
       // increment the drags count.
       // ...
+      entry: [draggedStateTargeted],
       on: {
         mousemove: {
           actions: assignDelta,

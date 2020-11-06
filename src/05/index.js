@@ -14,13 +14,22 @@ const machine = createMachine({
   //   px: 0,
   //   py: 0,
   // }
-  // context: ...,
+  context:{
+    x:0,
+    y:0,
+    px:0,
+    py:0,
+    dx:0,
+    dy:0
+  },
   states: {
     idle: {
       on: {
         mousedown: {
-          // Assign the point
-          // ...
+          actions:assign({
+            px: (_,event) => event.clientX,
+            py: (_,event) => event.clientY
+          }),
           target: 'dragging',
         },
       },
@@ -31,9 +40,25 @@ const machine = createMachine({
           // Assign the delta
           // ...
           // (no target!)
+          actions:assign({
+            dx: (context,event) => {
+              return event.clientX - context.px;
+            },
+            dy:(context,event) => {
+              return event.clientY - context.py;
+            } 
+          })
         },
         mouseup: {
           // Assign the position
+          actions: assign({
+            x : (context,_) => context.x + context.dx,
+            y: (context,_) => context.y + context.dy,
+            dx:0,
+            dy:0,
+            px:0,
+            py:0,
+          }),
           target: 'idle',
         },
       },
@@ -60,5 +85,8 @@ service.start();
 
 // Add event listeners for:
 // - mousedown on elBox
+elBox.addEventListener('mousedown',service.send);
 // - mousemove on elBody
+elBody.addEventListener('mousemove',service.send);
 // - mouseup on elBody
+elBody.addEventListener('mouseup',service.send);

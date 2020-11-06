@@ -14,4 +14,45 @@ const user = {
   interests: ['piano', 'state machines'],
 };
 
-output(user);
+// output(user);
+
+const machine = {
+  initial:'idle',
+  states:{
+    idle:{
+      on:{
+        FETCH:'pending'
+      }
+    },
+    pending:{
+      on:{
+        RESOLVE:'resolved',
+        REJECT:'rejected'
+      }
+    },
+    resolved:{},
+    rejected:{}
+  }
+}
+
+
+const transition = (state,event) => {
+  return machine.states[state]?.on?.[event] || state;
+}
+
+// output(transition('idle','FETCH'));
+// output(transition('pending','FETCH'));
+// output(transition('pending','REJECT'));
+
+let currentState = machine.initial;
+const send = (event) => {
+
+  const nextState = transition(currentState,event);
+  currentState = nextState;
+  console.log(currentState);
+  output(currentState);
+
+}
+
+// send("FETCH");
+// send("RESOLVE");
